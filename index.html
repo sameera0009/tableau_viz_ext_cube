@@ -2,20 +2,30 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>3D Rubik's Cube KPI Extension</title>
+    <title>Premium 3D Rubik's Cube Executive KPI</title>
     <!-- Include Tableau Extensions API Library -->
     <script src="https://cdn.jsdelivr.net/gh/tableau/extensions-api@main/lib/tableau.extensions.1.latest.js"></script>
     <style>
         :root {
-            --cube-size: 320px;
-            --grid-gap: 5px;
-            --rag-red: #ff4d4d;
-            --rag-amber: #ffb31a;
-            --rag-green: #2ecc71;
+            --cube-size: 340px;
+            --grid-gap: 8px;
+            
+            /* High-Fidelity Executive Color Palette */
+            --rag-red: #ff3b30;
+            --rag-red-glow: rgba(255, 59, 48, 0.25);
+            --rag-amber: #ffcc00;
+            --rag-amber-glow: rgba(255, 204, 0, 0.25);
+            --rag-green: #34c759;
+            --rag-green-glow: rgba(52, 199, 89, 0.25);
+            
+            --glass-bg: rgba(30, 30, 40, 0.65);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --panel-shadow: rgba(0, 0, 0, 0.55);
         }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: transparent;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+            background-color: transparent; 
             margin: 0;
             padding: 0;
             display: flex;
@@ -24,141 +34,195 @@
             height: 100vh;
             overflow: hidden;
             user-select: none;
+            perspective: 1200px;
         }
-        .container {
+
+        /* Ambient background radial highlight to accentuate 3D shapes */
+        .wrapper {
             position: relative;
-            width: 460px;
-            height: 460px;
+            width: 500px;
+            height: 500px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: radial-gradient(circle at center, rgba(40, 44, 68, 0.4) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        /* 3D Viewport Scene Context */
+        .scene {
+            width: var(--cube-size);
+            height: var(--cube-size);
+            perspective: 1400px;
             display: flex;
             justify-content: center;
             align-items: center;
         }
-        /* 3D Scene Viewport */
-        .scene {
-            width: var(--cube-size);
-            height: var(--cube-size);
-            perspective: 1000px;
-        }
+
+        /* The Core Cube Container - Utilizes default isometric angle offset so depth is recognizable */
         .cube {
             width: 100%;
             height: 100%;
             position: relative;
             transform-style: preserve-3d;
-            transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+            transform: rotateX(-15deg) rotateY(20deg);
+            transition: transform 0.7s cubic-bezier(0.19, 1, 0.22, 1);
         }
-        /* 3D Structural Face Positioning */
+
+        /* Premium Matte Dark Face Shells */
         .face {
             position: absolute;
             width: var(--cube-size);
             height: var(--cube-size);
-            background: #15151a;
-            border: 4px solid #0a0a0d;
-            border-radius: 8px;
+            background: rgba(10, 10, 14, 0.92);
+            border: 2px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
             box-sizing: border-box;
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             grid-template-rows: repeat(3, 1fr);
             gap: var(--grid-gap);
             padding: var(--grid-gap);
-            backface-visibility: hidden;
+            backface-visibility: visible; /* Keeps opposite edge lines naturally peeking over horizons */
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.6);
         }
-        /* Rotations mapping the 6 distinct faces around the center axis */
-        .face[data-side="1"] { transform: rotateY(  0deg) translateZ(160px); }
-        .face[data-side="2"] { transform: rotateY( 90deg) translateZ(160px); }
-        .face[data-side="3"] { transform: rotateY(180deg) translateZ(160px); }
-        .face[data-side="4"] { transform: rotateY(-90deg) translateZ(160px); }
-        .face[data-side="5"] { transform: rotateX( 90deg) translateZ(160px); }
-        .face[data-side="6"] { transform: rotateX(-90deg) translateZ(160px); }
 
-        /* Individual KPI Block Modules (9 per Face) */
+        /* Structural Transforms mapping explicit mathematical spaces */
+        .face[data-side="1"] { transform: rotateY(  0deg) translateZ(170px); }
+        .face[data-side="2"] { transform: rotateY( 90deg) translateZ(170px); }
+        .face[data-side="3"] { transform: rotateY(180deg) translateZ(170px); }
+        .face[data-side="4"] { transform: rotateY(-90deg) translateZ(170px); }
+        .face[data-side="5"] { transform: rotateX( 90deg) translateZ(170px); }
+        .face[data-side="6"] { transform: rotateX(-90deg) translateZ(170px); }
+
+        /* Premium Glassmorphism KPI Card Module Design */
         .kpi-card {
-            background-color: #24242e;
-            border-radius: 5px;
-            padding: 5px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            padding: 8px 6px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             color: #ffffff;
-            border-left: 4px solid #555;
-            box-shadow: inset 0 0 8px rgba(0,0,0,0.4);
-            box-sizing: border-box;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            box-shadow: 0 4px 12px var(--panel-shadow);
+            position: relative;
+            overflow: hidden;
         }
-        .kpi-card.RED { border-left-color: var(--rag-red); }
-        .kpi-card.AMBER { border-left-color: var(--rag-amber); }
-        .kpi-card.GREEN { border-left-color: var(--rag-green); }
 
+        /* Clean Micro-Depth on Hover */
+        .kpi-card:hover {
+            transform: translateZ(10px) scale(1.03);
+            background: rgba(45, 45, 60, 0.85);
+            border-color: rgba(255, 255, 255, 0.2);
+            z-index: 50;
+        }
+
+        /* Status Glow Underlining Indicators instead of harsh solid bars */
+        .kpi-card::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 8px;
+            right: 8px;
+            height: 3px;
+            border-radius: 3px 3px 0 0;
+            background: #555566;
+            transition: all 0.3s ease;
+        }
+        .kpi-card.RED::after { background: var(--rag-red); box-shadow: 0 -2px 10px var(--rag-red); }
+        .kpi-card.AMBER::after { background: var(--rag-amber); box-shadow: 0 -2px 10px var(--rag-amber); }
+        .kpi-card.GREEN::after { background: var(--rag-green); box-shadow: 0 -2px 10px var(--rag-green); }
+
+        /* KPI Typography Hierarchy */
         .kpi-title { 
-            font-weight: bold; 
-            font-size: 10px; 
-            color: #b3b3cc; 
+            font-size: 9px;
+            font-weight: 600; 
+            color: #9292a6; 
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
             overflow: hidden; 
             text-overflow: ellipsis; 
             white-space: nowrap;
         }
         .kpi-main { 
-            font-size: 13px; 
-            font-weight: 800; 
-            margin: 2px 0;
+            font-size: 14px; 
+            font-weight: 700; 
+            color: #ffffff;
+            margin: 4px 0;
             white-space: nowrap;
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
         }
         .kpi-achieve {
             font-size: 9px;
-            font-weight: normal;
-            color: #a0a0a0;
+            font-weight: 500;
+            margin-left: 3px;
         }
+        .kpi-card.RED .kpi-achieve { color: var(--rag-red); }
+        .kpi-card.AMBER .kpi-achieve { color: var(--rag-amber); }
+        .kpi-card.GREEN .kpi-achieve { color: var(--rag-green); }
+
         .kpi-sub-grid { 
             display: grid; 
             grid-template-columns: 1fr 1fr; 
-            gap: 2px; 
-            color: #8e8e93; 
+            gap: 4px; 
+            color: #ababbe; 
             font-size: 8px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            padding-top: 4px;
         }
+        .kpi-sub-label { color: #6e6e7e; margin-right: 1px; }
 
-        /* Directional Control Arrows */
+        /* Minimal Floating Navigation System Controls */
         .arrow {
             position: absolute;
-            background: rgba(36, 36, 46, 0.9);
-            border: 1px solid #444;
+            background: rgba(20, 20, 25, 0.7);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255,255,255,0.1);
             color: #ffffff;
             border-radius: 50%;
-            width: 38px;
-            height: 38px;
+            width: 40px;
+            height: 40px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 16px;
-            z-index: 10;
-            transition: all 0.2s ease;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+            font-size: 14px;
+            z-index: 100;
+            transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
         }
         .arrow:hover { 
-            background: #323242; 
-            transform: scale(1.1); 
-            border-color: #777;
+            background: rgba(40, 40, 55, 0.9); 
+            border-color: rgba(255, 255, 255, 0.3);
+            color: var(--rag-amber);
+            transform: scale(1.15);
         }
-        .arrow:active {
-            transform: scale(0.95);
-        }
-        .arrow-up    { top: 5px; left: calc(50% - 19px); }
-        .arrow-down  { bottom: 5px; left: calc(50% - 19px); }
-        .arrow-left  { left: 5px; top: calc(50% - 19px); }
-        .arrow-right { right: 5px; top: calc(50% - 19px); }
+        .arrow:active { transform: scale(0.95); }
+        
+        .arrow-up    { top: -10px; left: calc(50% - 20px); }
+        .arrow-down  { bottom: -10px; left: calc(50% - 20px); }
+        .arrow-left  { left: -10px; top: calc(50% - 20px); }
+        .arrow-right { right: -10px; top: calc(50% - 20px); }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <!-- Directional Navigation System -->
+<div class="wrapper">
+    <!-- Spatial Layout Controllers -->
     <button class="arrow arrow-up" onclick="rotateCube('up')">▲</button>
     <button class="arrow arrow-down" onclick="rotateCube('down')">▼</button>
     <button class="arrow arrow-left" onclick="rotateCube('left')">◀</button>
     <button class="arrow arrow-right" onclick="rotateCube('right')">▶</button>
 
-    <!-- 3D Environment Wrapper -->
+    <!-- Unified Dashboard Scene Workspace -->
     <div class="scene">
         <div class="cube" id="cube">
-            <!-- Six Faces Grid Systems -->
             <div class="face" data-side="1" id="face-1"></div>
             <div class="face" data-side="2" id="face-2"></div>
             <div class="face" data-side="3" id="face-3"></div>
@@ -173,7 +237,7 @@
     let currentSide = 1; 
     const parameterName = "sidevalue";
 
-    // Adjacency Matrix: Decides which side shifts into target view based on user navigation direction
+    // Adjacency Matrix: Preserves correct physical layout continuity across standard rotations
     const navigationMap = {
         1: { left: 4, right: 2, up: 5, down: 6 },
         2: { left: 1, right: 3, up: 5, down: 6 },
@@ -183,25 +247,23 @@
         6: { left: 4, right: 2, up: 1, down: 3 }
     };
 
-    // Vector Transforms mapping explicit target face alignment
+    // Matrix Rotations adding an intentional isometric tilt offset so sides feel genuinely deep
     const faceRotations = {
-        1: "rotateX(0deg) rotateY(0deg)",
-        2: "rotateX(0deg) rotateY(-90deg)",
-        3: "rotateX(0deg) rotateY(-180deg)",
-        4: "rotateX(0deg) rotateY(90deg)",
-        5: "rotateX(-90deg) rotateY(0deg)",
-        6: "rotateX(90deg) rotateY(0deg)"
+        1: "rotateX(-15deg) rotateY(20deg)",
+        2: "rotateX(-15deg) rotateY(-70deg)",
+        3: "rotateX(-15deg) rotateY(-160deg)",
+        4: "rotateX(-15deg) rotateY(110deg)",
+        5: "rotateX(-105deg) rotateY(20deg)",
+        6: "rotateX(75deg) rotateY(20deg)"
     };
 
     document.addEventListener("DOMContentLoaded", () => {
-        // Core Extension Initialization
         tableau.extensions.initializeAsync().then(() => {
             fetchTableauData();
             setupParameterListener();
-        }).catch(err => console.error("Error initializing Tableau Extension:", err));
+        }).catch(err => console.error("Tableau Initialization Failed:", err));
     });
 
-    // Extract Summary Data rows from target worksheet data table
     function fetchTableauData() {
         const worksheet = tableau.extensions.dashboardContent.dashboard.worksheets[0];
         
@@ -211,7 +273,6 @@
                 fieldIdx[col.fieldName.toLowerCase().trim()] = col.index;
             });
 
-            // Initialize object structural maps for the 6 cube dimensions
             const cubeData = { 1:[], 2:[], 3:[], 4:[], 5:[], 6:[] };
 
             dataTable.data.forEach(row => {
@@ -229,10 +290,9 @@
             });
 
             renderCubeFaces(cubeData);
-        }).catch(err => console.error("Error parsing Summary Data:", err));
+        }).catch(err => console.error("Summary Data parsing failed:", err));
     }
 
-    // Dynamic generation of DOM components inside grid objects
     function renderCubeFaces(cubeData) {
         for (let s = 1; s <= 6; s++) {
             const faceEl = document.getElementById(`face-${s}`);
@@ -240,29 +300,30 @@
             
             const kpis = cubeData[s] || [];
             
-            // Build the standard 3x3 Rubik structure (9 spaces per side)
             for (let i = 0; i < 9; i++) {
                 if (kpis[i]) {
                     const kpi = kpis[i];
                     faceEl.innerHTML += `
                         <div class="kpi-card ${kpi.rag}">
                             <div class="kpi-title" title="${kpi.kpiName}">${kpi.kpiName}</div>
-                            <div class="kpi-main">${kpi.actual} <span class="kpi-achieve">(${kpi.achievement})</span></div>
+                            <div class="kpi-main">
+                                <span>${kpi.actual}</span>
+                                <span class="kpi-achieve">${kpi.achievement}</span>
+                            </div>
                             <div class="kpi-sub-grid">
-                                <div>LM: ${kpi.varianceLM}</div>
-                                <div>YE: ${kpi.varianceYE}</div>
+                                <div><span class="kpi-sub-label">LM:</span> ${kpi.varianceLM}</div>
+                                <div><span class="kpi-sub-label">YE:</span> ${kpi.varianceYE}</div>
                             </div>
                         </div>
                     `;
                 } else {
-                    // Safe structural fallback grid filling
-                    faceEl.innerHTML += `<div class="kpi-card" style="opacity:0.15;"><div class="kpi-title">Empty</div></div>`;
+                    // Modern minimalist blank segment state
+                    faceEl.innerHTML += `<div class="kpi-card" style="opacity:0.08; background:rgba(255,255,255,0.02);"><div class="kpi-title">—</div></div>`;
                 }
             }
         }
     }
 
-    // Navigation trigger: Intercepts click vectors
     function rotateCube(direction) {
         const nextSide = navigationMap[currentSide][direction];
         if (nextSide) {
@@ -270,7 +331,6 @@
         }
     }
 
-    // Parameter write-back pipeline updates Dashboard state
     function updateTableauParameter(sideValue) {
         tableau.extensions.dashboardContent.dashboard.findParameterAsync(parameterName).then(param => {
             if (param) {
@@ -278,20 +338,17 @@
                     applyCubeRotation(sideValue);
                 });
             } else {
-                console.warn(`Tableau Parameter "${parameterName}" missing. Rendering UI shift locally.`);
                 applyCubeRotation(sideValue);
             }
         });
     }
 
-    // Engine rotation mapping apply via hardware accelerated layout properties
     function applyCubeRotation(side) {
         const cube = document.getElementById("cube");
         cube.style.transform = faceRotations[side];
         currentSide = side;
     }
 
-    // Monitors changes to Tableau parameters to rotate the cube from external filters
     function setupParameterListener() {
         tableau.extensions.dashboardContent.dashboard.findParameterAsync(parameterName).then(param => {
             if (param) {
@@ -303,7 +360,6 @@
                         }
                     });
                 });
-                // Sync position instantly to current startup setting
                 const initialVal = parseInt(param.currentValue.value);
                 if (initialVal >= 1 && initialVal <= 6) {
                     applyCubeRotation(initialVal);
